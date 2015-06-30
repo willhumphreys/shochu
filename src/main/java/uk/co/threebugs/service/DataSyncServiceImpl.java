@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -21,8 +22,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class DataSyncServiceImpl implements DataSyncService {
 
     private static final Logger LOG = getLogger(DataSyncServiceImpl.class);
-    private final BucketService bucketService = new BucketService();
-    private final LocalFileService localFileService = new LocalFileService();
+    private final BucketService bucketService;
+    private final LocalFileService localFileService;
+
+    @Autowired
+    public DataSyncServiceImpl(BucketService bucketService, LocalFileService localFileService) {
+        this.bucketService = bucketService;
+        this.localFileService = localFileService;
+    }
 
     @Override
     public void refresh() {
