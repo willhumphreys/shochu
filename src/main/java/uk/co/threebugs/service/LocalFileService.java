@@ -22,7 +22,7 @@ public class LocalFileService {
         localFiles = Sets.newHashSet();
     }
 
-    Set<String> listLocalFiles() {
+    public Set<String> listLocalFiles() {
         LOG.info("List local files");
         final Path tickDataPath = Paths.get("/tickdata");
 
