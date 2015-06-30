@@ -1,7 +1,7 @@
 <!doctype html>
-<html ng-app>
+<html ng-app="myApp">
 <head>
-    <title>Hello AngularJS</title>
+    <title>Shochu</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
     <script src="hello.js"></script>
 </head>
@@ -9,7 +9,7 @@
 <body>
 <div ng-controller="Hello">
     <ul>
-        <li ng-repeat="x in localfiles">
+        <li ng-repeat="x in data">
             {{ x }}
         </li>
     </ul>
