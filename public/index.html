@@ -9,7 +9,13 @@
 <body>
 <div ng-controller="Hello">
     <ul>
-        <li ng-repeat="x in data">
+        <li ng-repeat="x in localfiles">
+            {{ x }}
+        </li>
+    </ul>
+
+    <ul>
+        <li ng-repeat="x in remotefiles">
             {{ x }}
         </li>
     </ul>
