@@ -21,7 +21,7 @@ public class DataController {
         this.bucketService = bucketService;
     }
 
-    @RequestMapping("/localFiles")
+    @RequestMapping("/localfiles")
     public @ResponseBody
     Set<String> getLocalFiles() {
         return localFileService.listLocalFiles();
