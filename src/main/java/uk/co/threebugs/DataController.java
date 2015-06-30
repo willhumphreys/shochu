@@ -6,9 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.co.threebugs.service.BucketService;
-import uk.co.threebugs.service.BucketServiceImpl;
 import uk.co.threebugs.service.LocalFileService;
-import uk.co.threebugs.service.LocalFileServiceImpl;
 
 import java.util.Set;
 
