@@ -7,16 +7,16 @@
 </head>
 
 <body>
-<div ng-controller="Hello">
+<div ng-controller="FileController">
     <ul>
-        <li ng-repeat="x in localfiles">
-            {{ x }}
+        <li ng-repeat="data in localfiles.data">
+            {{ data }}
         </li>
     </ul>
 
     <ul>
-        <li ng-repeat="x in remotefiles">
-            {{ x }}
+        <li ng-repeat="data in remotefiles.data">
+            {{ data }}
         </li>
     </ul>
 </div>

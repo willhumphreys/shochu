@@ -16,7 +16,7 @@ myApp.service('dataService', function($http) {
     };
 });
 
-myApp.controller('Hello', function($scope, dataService) {
+myApp.controller('FileController', function($scope, dataService) {
     $scope.localfiles = null;
     dataService.getLocalFiles().then(function(dataResponse) {
         $scope.localfiles = dataResponse;
