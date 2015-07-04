@@ -2,14 +2,12 @@ package uk.co.threebugs.service;
 
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -26,14 +24,19 @@ public class LocalFileServiceImpl implements LocalFileService {
     }
 
     @Override
-    public Set<String> listLocalFiles() {
+    public Set<String> listLocalFiles(final Path tickDataPath) {
         LOG.info("List local files");
-        final Path tickDataPath = Paths.get("/tickdata");
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(tickDataPath)) {
             for (Path path : directoryStream) {
-                LOG.info(path.getFileName().toString());
-                localFiles.add(path.getFileName().toString());
+                final Path fileName = path.getFileName();
+
+                if (fileName.toString().endsWith(".csv")) {
+                    LOG.info(fileName.toString());
+                    localFiles.add(fileName
+                            .toString());
+                }
+
 
             }
         } catch (IOException ex) {

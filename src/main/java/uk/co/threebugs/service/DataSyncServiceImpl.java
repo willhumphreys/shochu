@@ -42,7 +42,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
         final Set<String> remoteFiles = bucketService.listRemoteFiles(s3, bucketName);
 
-        final Set<String> localFiles = localFileService.listLocalFiles();
+        final Set<String> localFiles = localFileService.listLocalFiles(Paths.get("/tickdata"));
 
         upload(s3, bucketName, remoteFiles, localFiles);
 

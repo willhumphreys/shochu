@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.co.threebugs.service.BucketService;
 import uk.co.threebugs.service.LocalFileService;
 
+import java.nio.file.Paths;
 import java.util.Set;
 
 @Controller
@@ -25,7 +26,7 @@ public class DataController {
     @RequestMapping("/localfiles")
     public @ResponseBody
     Set<String> getLocalFiles() {
-        return localFileService.listLocalFiles();
+        return localFileService.listLocalFiles(Paths.get("/tickdata"));
     }
 
     @RequestMapping("/remotefiles")
