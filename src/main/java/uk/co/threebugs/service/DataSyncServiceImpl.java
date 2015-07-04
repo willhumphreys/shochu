@@ -1,6 +1,5 @@
 package uk.co.threebugs.service;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -65,7 +64,8 @@ public class DataSyncServiceImpl implements DataSyncService {
 
             final S3Object result = s3.getObject(bucketName, missingLocalFile);
 
-            File targetFile = Paths.get("/tickdata", missingLocalFile).toFile();
+            File targetFile = Paths.get("/tickdata", missingLocalFile)
+                    .toFile();
 
             try {
                 FileUtils.copyInputStreamToFile(result.getObjectContent(), targetFile);
@@ -81,6 +81,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
         LOG.info("Missing remote files {}", missingRemoteFiles.size());
 
+        final TransferManager tm = new TransferManager(s3);
         for (String missingRemoteFile : missingRemoteFiles) {
 
             final Path missingRemotePath = Paths.get("/tickdata", missingRemoteFile);
@@ -88,11 +89,11 @@ public class DataSyncServiceImpl implements DataSyncService {
 
             LOG.info("Uploading {}", missingRemotePath);
 
-           // final PutObjectResult result = simpleUpload(s3, bucketName, missingRemoteFile, missingRemotePath);
+            // final PutObjectResult result = simpleUpload(s3, bucketName, missingRemoteFile, missingRemotePath);
 
             //LOG.info("Uploaded {}", result.getETag());
 
-            final Upload upload = uploadMultiPart(s3, bucketName, missingRemoteFile, missingRemotePath);
+            final Upload upload = uploadMultiPart(bucketName, missingRemoteFile, missingRemotePath, tm);
 
 
         }
@@ -100,28 +101,26 @@ public class DataSyncServiceImpl implements DataSyncService {
 
     private PutObjectResult simpleUpload(AmazonS3 s3, String bucketName, String missingRemoteFile, Path missingRemotePath) {
         return s3.putObject(new PutObjectRequest(bucketName, missingRemoteFile,
-                        missingRemotePath.toFile()));
+                missingRemotePath.toFile()));
     }
 
-    private Upload uploadMultiPart(AmazonS3 s3, String bucketName, String fileName, Path filePath) {
-
-        TransferManager tm = new TransferManager(s3);
+    private Upload uploadMultiPart(String bucketName, String fileName, Path filePath, final TransferManager tm) {
 
         // TransferManager processes all transfers asynchronously,
         // so this call will return immediately.
         Upload upload = tm.upload(bucketName, fileName, filePath.toFile());
-  //      System.out.println("Hello2");
+        //      System.out.println("Hello2");
 
-        try {
-            // Or you can block and wait for the upload to finish
-            upload.waitForCompletion();
-            System.out.println("Upload complete.");
-        } catch (AmazonClientException amazonClientException) {
-            System.out.println("Unable to upload file, upload was aborted.");
-            amazonClientException.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // Or you can block and wait for the upload to finish
+//            upload.waitForCompletion();
+//            System.out.println("Upload complete.");
+//        } catch (AmazonClientException amazonClientException) {
+//            System.out.println("Unable to upload file, upload was aborted.");
+//            amazonClientException.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         return upload;
 
