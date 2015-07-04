@@ -1,9 +1,12 @@
 package uk.co.threebugs.service;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -85,11 +88,42 @@ public class DataSyncServiceImpl implements DataSyncService {
 
             LOG.info("Uploading {}", missingRemotePath);
 
-            final PutObjectResult result = s3.putObject(new PutObjectRequest(bucketName, missingRemoteFile,
-                    missingRemotePath.toFile()));
+           // final PutObjectResult result = simpleUpload(s3, bucketName, missingRemoteFile, missingRemotePath);
+
+            //LOG.info("Uploaded {}", result.getETag());
+
+            final Upload upload = uploadMultiPart(s3, bucketName, missingRemoteFile, missingRemotePath);
 
 
-            LOG.info("Uploaded {}", result.getETag());
         }
+    }
+
+    private PutObjectResult simpleUpload(AmazonS3 s3, String bucketName, String missingRemoteFile, Path missingRemotePath) {
+        return s3.putObject(new PutObjectRequest(bucketName, missingRemoteFile,
+                        missingRemotePath.toFile()));
+    }
+
+    private Upload uploadMultiPart(AmazonS3 s3, String bucketName, String fileName, Path filePath) {
+
+        TransferManager tm = new TransferManager(s3);
+
+        // TransferManager processes all transfers asynchronously,
+        // so this call will return immediately.
+        Upload upload = tm.upload(bucketName, fileName, filePath.toFile());
+  //      System.out.println("Hello2");
+
+        try {
+            // Or you can block and wait for the upload to finish
+            upload.waitForCompletion();
+            System.out.println("Upload complete.");
+        } catch (AmazonClientException amazonClientException) {
+            System.out.println("Unable to upload file, upload was aborted.");
+            amazonClientException.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return upload;
+
     }
 }
