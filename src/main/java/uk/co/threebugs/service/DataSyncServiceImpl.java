@@ -61,6 +61,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
         for (String missingLocalFile : missingLocalFiles) {
 
+            LOG.info("Downloading {}", missingLocalFile);
 
             final S3Object result = s3.getObject(bucketName, missingLocalFile);
 
