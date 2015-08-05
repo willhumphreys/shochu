@@ -4,8 +4,8 @@
     <title>Shochu</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script>
     <script src="files.js"></script>
-    <link href="stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"/>
+    <link href="stylesheets/print.css" media="print" rel="stylesheet" type="text/css"/>
     <!--[if IE]>
     <link href="stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css"/>
     <![endif]-->
@@ -13,12 +13,13 @@
 
 <body>
 <div ng-controller="FileController">
+    <h3>local</h3>
     <ul>
         <li ng-repeat="data in localfiles.data">
             {{ data }}
         </li>
     </ul>
-
+    <h3>remote</h3>
     <ul>
         <li ng-repeat="data in remotefiles.data">
             {{ data }}
