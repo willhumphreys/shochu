@@ -39,22 +39,37 @@ public class DataSyncServiceImpl implements DataSyncService {
         AmazonS3 s3 = bucketService.loginAWS();
 
 
-        final String bucketName = "tickdata-matcha";
-        bucketService.createBucket(s3, bucketName);
-
-        final Set<String> remoteFiles = bucketService.listRemoteFiles(s3, bucketName);
-
-        final Set<String> localFiles = localFileService.listLocalFiles(Paths.get("/tickdata"));
-
-        upload(s3, bucketName, remoteFiles, localFiles);
-
-
-        download(s3, bucketName, remoteFiles, localFiles);
-
+        syncTickData(s3);
+        syncLiveData(s3);
 
     }
 
-    private void download(AmazonS3 s3, String bucketName, Set<String> remoteFiles, Set<String> localFiles) {
+    private void syncLiveData(AmazonS3 s3) {
+        final String liveDataBucket = "livedata-matcha";
+        bucketService.createBucket(s3, liveDataBucket);
+
+        final Set<String> remoteLiveDataFiles = bucketService.listRemoteFiles(s3, liveDataBucket);
+        final Set<String> localLiveDataFiles = localFileService.listLocalFiles(Paths.get("/liveData"));
+
+
+        download(s3, liveDataBucket, remoteLiveDataFiles, localLiveDataFiles, "/liveData");
+    }
+
+    private void syncTickData(AmazonS3 s3) {
+        final String tickDataBucket = "tickdata-matcha";
+        bucketService.createBucket(s3, tickDataBucket);
+
+        final Set<String> remoteTickFiles = bucketService.listRemoteFiles(s3, tickDataBucket);
+        final Set<String> localTickFiles = localFileService.listLocalFiles(Paths.get("/tickdata"));
+
+        upload(s3, tickDataBucket, remoteTickFiles, localTickFiles);
+        download(s3, tickDataBucket, remoteTickFiles, localTickFiles, "/tickdata");
+
+        LOG.info("Finished syncing " + tickDataBucket);
+    }
+
+    private void download(AmazonS3 s3, String bucketName, Set<String> remoteFiles, Set<String> localFiles, String
+            downloadLocation) {
         final Sets.SetView<String> missingLocalFiles = Sets.difference(remoteFiles, localFiles);
 
         LOG.info("Missing local files {}", missingLocalFiles.size());
@@ -65,7 +80,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
             final S3Object result = s3.getObject(bucketName, missingLocalFile);
 
-            File targetFile = Paths.get("/tickdata", missingLocalFile)
+            File targetFile = Paths.get(downloadLocation, missingLocalFile)
                     .toFile();
 
             try {
@@ -107,23 +122,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
     private Upload uploadMultiPart(String bucketName, String fileName, Path filePath, final TransferManager tm) {
 
-        // TransferManager processes all transfers asynchronously,
-        // so this call will return immediately.
-        Upload upload = tm.upload(bucketName, fileName, filePath.toFile());
-        //      System.out.println("Hello2");
-
-//        try {
-//            // Or you can block and wait for the upload to finish
-//            upload.waitForCompletion();
-//            System.out.println("Upload complete.");
-//        } catch (AmazonClientException amazonClientException) {
-//            System.out.println("Unable to upload file, upload was aborted.");
-//            amazonClientException.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
-        return upload;
+        return tm.upload(bucketName, fileName, filePath.toFile());
 
     }
 }

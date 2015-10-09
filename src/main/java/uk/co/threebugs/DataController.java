@@ -3,6 +3,7 @@ package uk.co.threebugs;
 import com.amazonaws.services.s3.AmazonS3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.co.threebugs.service.BucketService;
@@ -23,16 +24,14 @@ public class DataController {
         this.bucketService = bucketService;
     }
 
-    @RequestMapping("/localfiles")
-    public @ResponseBody
-    Set<String> getLocalFiles() {
-        return localFileService.listLocalFiles(Paths.get("/tickdata"));
+    @RequestMapping("/localfiles/{rootDir}")
+    public @ResponseBody Set<String> getLocalFiles(@PathVariable("rootDir") String rootDir) {
+        return localFileService.listLocalFiles(Paths.get("/" + rootDir));
     }
 
-    @RequestMapping("/remotefiles")
-    public @ResponseBody
-    Set<String> getRemoteFiles() {
+    @RequestMapping("/remotefiles/{bucket}")
+    public @ResponseBody Set<String> getRemoteFiles(@PathVariable("bucket") String bucket) {
         final AmazonS3 amazonS3 = bucketService.loginAWS();
-        return bucketService.listRemoteFiles(amazonS3, "tickdata-matcha");
+        return bucketService.listRemoteFiles(amazonS3, bucket);
     }
 }

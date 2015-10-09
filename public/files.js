@@ -4,14 +4,14 @@ myApp.service('dataService', function($http) {
     this.getLocalFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/localfiles'
+            url: 'http://localhost:8080/localfiles/tickData'
         });
     };
 
     this.getRemoteFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/remotefiles'
+            url: 'http://localhost:8080/remotefiles/tickdata-matcha'
         });
     };
 });
