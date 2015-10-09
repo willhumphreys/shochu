@@ -26,7 +26,13 @@ public class DataController {
 
     @RequestMapping("/localfiles/{rootDir}")
     public @ResponseBody Set<String> getLocalFiles(@PathVariable("rootDir") String rootDir) {
-        return localFileService.listLocalFiles(Paths.get("/" + rootDir));
+
+        boolean liveData = false;
+        if(rootDir.equals("liveData")) {
+            liveData = true;
+        }
+
+        return localFileService.listLocalFiles(Paths.get("/" + rootDir), liveData);
     }
 
     @RequestMapping("/remotefiles/{bucket}")

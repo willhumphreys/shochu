@@ -17,21 +17,18 @@ public class LocalFileServiceImpl implements LocalFileService {
 
     private static final Logger LOG = getLogger(LocalFileServiceImpl.class);
 
-    private Set<String> localFiles;
-
-    public LocalFileServiceImpl() {
-        localFiles = Sets.newHashSet();
-    }
-
     @Override
-    public Set<String> listLocalFiles(final Path tickDataPath) {
+    public Set<String> listLocalFiles(final Path tickDataPath, boolean liveData) {
+
+        Set<String> localFiles = Sets.newHashSet();
+
         LOG.info("List local files");
 
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(tickDataPath)) {
             for (Path path : directoryStream) {
                 final Path fileName = path.getFileName();
 
-                if (fileName.toString().endsWith(".csv")) {
+                if (fileName.toString().endsWith(".csv") || liveData) {
                     LOG.info(fileName.toString());
                     localFiles.add(fileName
                             .toString());

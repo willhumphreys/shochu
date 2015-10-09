@@ -49,7 +49,7 @@ public class DataSyncServiceImpl implements DataSyncService {
         bucketService.createBucket(s3, liveDataBucket);
 
         final Set<String> remoteLiveDataFiles = bucketService.listRemoteFiles(s3, liveDataBucket);
-        final Set<String> localLiveDataFiles = localFileService.listLocalFiles(Paths.get("/liveData"));
+        final Set<String> localLiveDataFiles = localFileService.listLocalFiles(Paths.get("/liveData"), true);
 
 
         download(s3, liveDataBucket, remoteLiveDataFiles, localLiveDataFiles, "/liveData");
@@ -60,7 +60,7 @@ public class DataSyncServiceImpl implements DataSyncService {
         bucketService.createBucket(s3, tickDataBucket);
 
         final Set<String> remoteTickFiles = bucketService.listRemoteFiles(s3, tickDataBucket);
-        final Set<String> localTickFiles = localFileService.listLocalFiles(Paths.get("/tickdata"));
+        final Set<String> localTickFiles = localFileService.listLocalFiles(Paths.get("/tickdata"), false);
 
         upload(s3, tickDataBucket, remoteTickFiles, localTickFiles);
         download(s3, tickDataBucket, remoteTickFiles, localTickFiles, "/tickdata");
