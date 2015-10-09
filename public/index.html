@@ -13,15 +13,28 @@
 
 <body>
 <div ng-controller="FileController">
-    <h3>local</h3>
+    <h3>local tick data</h3>
     <ul>
-        <li ng-repeat="data in localfiles.data">
+        <li ng-repeat="data in localTickDataFiles.data">
             {{ data }}
         </li>
     </ul>
-    <h3>remote</h3>
+    <h3>remote tick data</h3>
     <ul>
-        <li ng-repeat="data in remotefiles.data">
+        <li ng-repeat="data in remoteTickDataFiles.data">
+            {{ data }}
+        </li>
+    </ul>
+
+    <h3>local live data</h3>
+    <ul>
+        <li ng-repeat="data in localLiveDataFiles.data">
+            {{ data }}
+        </li>
+    </ul>
+    <h3>remote live data</h3>
+    <ul>
+        <li ng-repeat="data in remoteLiveDataFiles.data">
             {{ data }}
         </li>
     </ul>
