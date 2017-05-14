@@ -37,10 +37,15 @@ public class BucketServiceImpl implements BucketService {
                 .withBucketName(bucketName));
 
         for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-            System.out.println(" - " + objectSummary.getKey() + "  " +
-                    "(size = " + objectSummary.getSize() + ")");
+            String key = objectSummary.getKey();
 
-            remoteFiles.add(objectSummary.getKey());
+            if (key.contains("/")) {
+                key = key.substring(0, key.indexOf("/"));
+            }
+            if (remoteFiles.add(key)) {
+                System.out.println(" - " + key + "  " +
+                        "(size = " + objectSummary.getSize() + ")");
+            }
         }
 
         return remoteFiles;
