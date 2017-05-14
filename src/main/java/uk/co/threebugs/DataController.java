@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.co.threebugs.service.BucketService;
+import uk.co.threebugs.service.Constants;
 import uk.co.threebugs.service.LocalFileService;
 
 import java.nio.file.Paths;
@@ -28,7 +29,7 @@ public class DataController {
     public @ResponseBody Set<String> getLocalFiles(@PathVariable("rootDir") String rootDir) {
 
         boolean liveData = false;
-        if(rootDir.equals("liveData")) {
+        if(rootDir.equals(Constants.LIVE_DATA_BUCKET)) {
             liveData = true;
         }
 
