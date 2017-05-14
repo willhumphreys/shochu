@@ -4,28 +4,28 @@ myApp.service('dataService', function($http) {
     this.getLocalTickDataFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/localfiles/tickData'
+            url: 'http://localhost:8080/localfiles/mochi-data'
         });
     };
 
     this.getRemoteTickDataFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/remotefiles/tickdata-matcha'
+            url: 'http://localhost:8080/remotefiles/mochi-data2'
         });
     };
 
     this.getLocalLiveDataFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/localfiles/liveData'
+            url: 'http://localhost:8080/localfiles/mochi-graphs'
         });
     };
 
     this.getRemoteLiveDataFiles = function() {
         return $http({
             method: 'GET',
-            url: 'http://localhost:8080/remotefiles/livedata-matcha'
+            url: 'http://localhost:8080/remotefiles/mochi-graphs'
         });
     };
 });

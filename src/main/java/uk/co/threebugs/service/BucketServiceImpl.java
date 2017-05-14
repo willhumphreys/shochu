@@ -4,7 +4,6 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.co.threebugs.service.Constants.FALL_BACK_REGION;
+import static uk.co.threebugs.service.Constants.TICK_DATA_BUCKET;
 
 @Service
 public class BucketServiceImpl implements BucketService {
@@ -47,12 +48,11 @@ public class BucketServiceImpl implements BucketService {
 
     @Override
     public void createBucket(AmazonS3 s3, String bucketName) {
-        try {
-            s3.listObjects(new ListObjectsRequest("tickdata-matcha", null, null, null, 0));
-        } catch (Exception e) {
+        if (!s3.doesBucketExist(bucketName)) {
             LOG.warn("No tick-data bucket. Going to create one.");
             s3.createBucket(bucketName);
         }
+        s3.listObjects(new ListObjectsRequest(TICK_DATA_BUCKET, null, null, null, 0));
     }
 
     @Override
@@ -73,16 +73,11 @@ public class BucketServiceImpl implements BucketService {
                     e);
         }
 
-        if(s3 == null) {
-
+        if (s3 == null) {
             s3 = new AmazonS3Client(credentials);
-            Region usWest2 = Region.getRegion(Regions.US_WEST_2);
-            s3.setRegion(usWest2);
+            s3.setRegion(Region.getRegion(FALL_BACK_REGION));
 
         }
-
-
-
         return s3;
     }
 }

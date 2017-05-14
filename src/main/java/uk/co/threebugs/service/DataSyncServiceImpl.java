@@ -19,11 +19,14 @@ import java.nio.file.Paths;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.co.threebugs.service.Constants.LIVE_DATA_BUCKET;
+import static uk.co.threebugs.service.Constants.LIVE_DATA_PATH;
 
 @Component
 public class DataSyncServiceImpl implements DataSyncService {
 
     private static final Logger LOG = getLogger(DataSyncServiceImpl.class);
+
     private final BucketService bucketService;
     private final LocalFileService localFileService;
 
@@ -45,31 +48,31 @@ public class DataSyncServiceImpl implements DataSyncService {
     }
 
     private void syncLiveData(AmazonS3 s3) {
-        final String liveDataBucket = "livedata-matcha";
-        bucketService.createBucket(s3, liveDataBucket);
+        bucketService.createBucket(s3, LIVE_DATA_BUCKET);
 
-        final Set<String> remoteLiveDataFiles = bucketService.listRemoteFiles(s3, liveDataBucket);
-        final Set<String> localLiveDataFiles = localFileService.listLocalFiles(Paths.get("/liveData"), true);
-
-
-        download(s3, liveDataBucket, remoteLiveDataFiles, localLiveDataFiles, "/liveData");
+        final Set<String> remoteLiveDataFiles = bucketService.listRemoteFiles(s3, LIVE_DATA_BUCKET);
+        final Set<String> localLiveDataFiles = localFileService.listLocalFiles(LIVE_DATA_PATH, true);
+        download(s3, LIVE_DATA_BUCKET, remoteLiveDataFiles, localLiveDataFiles, LIVE_DATA_PATH);
     }
 
     private void syncTickData(AmazonS3 s3) {
-        final String tickDataBucket = "tickdata-matcha";
-        bucketService.createBucket(s3, tickDataBucket);
+        bucketService.createBucket(s3, Constants.TICK_DATA_BUCKET);
 
-        final Set<String> remoteTickFiles = bucketService.listRemoteFiles(s3, tickDataBucket);
-        final Set<String> localTickFiles = localFileService.listLocalFiles(Paths.get("/tickdata"), false);
+        final Set<String> remoteTickFiles = bucketService.listRemoteFiles(s3, Constants.TICK_DATA_BUCKET);
+        final Set<String> localTickFiles = localFileService.listLocalFiles(Constants.TICK_DATA_PATH, false);
 
-        upload(s3, tickDataBucket, remoteTickFiles, localTickFiles);
-        download(s3, tickDataBucket, remoteTickFiles, localTickFiles, "/tickdata");
+        upload(s3, Constants.TICK_DATA_BUCKET, remoteTickFiles, localTickFiles);
+        download(s3, Constants.TICK_DATA_BUCKET, remoteTickFiles, localTickFiles, Constants.TICK_DATA_PATH);
 
-        LOG.info("Finished syncing " + tickDataBucket);
+        LOG.info("Finished syncing " + Constants.TICK_DATA_BUCKET);
     }
 
-    private void download(AmazonS3 s3, String bucketName, Set<String> remoteFiles, Set<String> localFiles, String
-            downloadLocation) {
+    private void download(AmazonS3 s3,
+                          String bucketName,
+                          Set<String> remoteFiles,
+                          Set<String> localFiles,
+                          Path downloadLocation) {
+
         final Sets.SetView<String> missingLocalFiles = Sets.difference(remoteFiles, localFiles);
 
         LOG.info("Missing local files {}", missingLocalFiles.size());
@@ -80,8 +83,7 @@ public class DataSyncServiceImpl implements DataSyncService {
 
             final S3Object result = s3.getObject(bucketName, missingLocalFile);
 
-            File targetFile = Paths.get(downloadLocation, missingLocalFile)
-                    .toFile();
+            File targetFile = downloadLocation.resolve(missingLocalFile).toFile();
 
             try {
                 FileUtils.copyInputStreamToFile(result.getObjectContent(), targetFile);
@@ -100,7 +102,7 @@ public class DataSyncServiceImpl implements DataSyncService {
         final TransferManager tm = new TransferManager(s3);
         for (String missingRemoteFile : missingRemoteFiles) {
 
-            final Path missingRemotePath = Paths.get("/tickdata", missingRemoteFile);
+            final Path missingRemotePath = Constants.TICK_DATA_PATH.resolve(missingRemoteFile);
 
 
             LOG.info("Uploading {}", missingRemotePath);
