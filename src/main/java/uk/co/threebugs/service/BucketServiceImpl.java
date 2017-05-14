@@ -39,9 +39,7 @@ public class BucketServiceImpl implements BucketService {
         for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
             String key = objectSummary.getKey();
 
-            if (key.contains("/")) {
-                key = key.substring(0, key.indexOf("/"));
-            }
+            key = getFirstPathOfName(key);
             if (remoteFiles.add(key)) {
                 System.out.println(" - " + key + "  " +
                         "(size = " + objectSummary.getSize() + ")");
@@ -49,6 +47,13 @@ public class BucketServiceImpl implements BucketService {
         }
 
         return remoteFiles;
+    }
+
+    private String getFirstPathOfName(String key) {
+        if (key.contains("/")) {
+            key = key.substring(0, key.indexOf("/"));
+        }
+        return key;
     }
 
     @Override
